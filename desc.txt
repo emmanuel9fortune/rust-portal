@@ -1,0 +1,497 @@
+PROJECT DESCRIPTION
+
+WHAT WE ARE BUILDING
+
+This is a university management portal, think of the university as a huge building.
+inside that building, we have;
+
+. students
+. lecturers
+. non-academic staff
+. administrators 
+. departments
+. faculties
+. courses
+. academic sessions
+. semesters
+. results
+. payments
+. admissions
+. documents
+. notifcations
+
+This software is basically a digital version of that entire university administration system.
+The people using this won't all see the same thing. So basically there will be different UI/UX, roles etc.
+Example;
+
+Student - see > student portal
+Lecturer - see > lecturer portal
+Admin - see > admin portal
+and above all of them is the SUPER Admin
+
++++++++++++++++ WORK DONE ON DAY ONE ++++++++++++++
+
+FOUNDATIONAL STRUCTURE FOR THIS RUST PROJECT
+
+School portal
+    |
+    backend
+    |__ cargo.toml
+    |__ .env
+    |__ .gitignore
+    |
+    |___ src/
+        |__main.res
+        |__config/
+        |    |__mod.rs
+        |__ database/
+        |    |__mod.rs
+        |__ modls/
+        |    |__mod.rs
+        |    |__user.rs
+        |    |__student.rs
+        |    |__staff.rs
+        |    |__faculty.rs
+        |    |__department.rs
+        |    |__program.rs
+        |    |__course.rs
+        |    |__session.rs
+        |    |__semester.rs
+        |    |__registration.rs
+        |    |__result.rs
+        |
+        |__ routes/
+        |    |__mod.rs
+        |    |__auth.rs
+        |    |__users.rs
+        |    |__students.rs
+        |    |__academics.rs
+        |    |__courses.rs
+        |    |__results.rs
+        |    |__admin.rs
+        |
+        |__ handlers/
+        |    |__mod.rs
+        |    |__auth.rs
+        |    |__users.rs
+        |    |__students.rs
+        |    |__academics.rs
+        |    |__results.rs
+        |
+        |__ services/
+        |    |__mod.rs
+        |    |__auth.rs
+        |    |__password.rs
+        |    |__user.rs
+        |    |__student.rs
+        |    |__result.rs
+        |
+        |__ middleware/
+        |    |__mod.rs
+        |    |__auth.rs
+        |    |__permissions.rs
+        |    |__rate_limit.rs
+        |
+        |__ errors/
+        |    |__mod.rs
+
+
+    THE VARIOUS PORTALS
+
+SUPER ADMIN PORTAL (MOST IMPORTANT PORTAL)
+
+Who is the super admin? 
+Imagine someone sitting in the university's central administrative office.
+The person can control almost everything in the system.
+
+The super admin can:
+
+. create administrators
+. create faculties
+. create departments
+. create programs
+. create courses
+. create academin sessions
+. create semesters
+. create users
+. create permissions
+. view systen activities
+. configure the portal
+
+So yeah basically the super admin portal is the control room of the university portal.
+
+DESCRIBING THE VARIOUS PAGES ON THE SUPER ADMIN PORTAL
+
+1. DASHBOARD :- this page would display, the number of students, lectures, staffs, faculties, departments, active session, peding admission,
+pending results, pending payments.
+
+2. UNIVERSITY STRUCTURE :- this page contains all the hierachy of the university and the super admin should be able to mange that structure.
+
+univeristy
+|___ faculty of science
+|        |__computer science
+|        |__Mathematics
+|        |__Physics
+|        
+|___ faculty of Engineering
+|        |__civil Engineering
+|        |__Mechanical Engineering
+|        |__Electrical Engineering        
+
+3. FACULTIES :- this page manages all the available faculties. the super admin should be able to create faculty, view faculty, edit faculty,
+deactivate faculty.
+
+Faculty:
+Faculty of Engineering
+
+code: FC
+
+Status: active
+
+4. DEPARTMENT :- This page manages the departments
+
+|___ faculty of science
+|        |__computer science
+|        |__Mathematics
+|        |__Physics
+
+5. PROGRAMS :- This is were it becomes more academic. A department can offer several programs 
+
+|___ department of computer science
+|        |__B.sc Computer Science
+|        |__M.sc Computer Science
+|        |__Ph.D Computer Science
+
+6. COURSES :- This manages the subjects students actually study.
+
+CSC 101
+iNTRODCUTION TO COMPUTER SCIENCE
+
+CSC 201
+DATA STRUCTURE
+
+7. ACADEMIC SESSION :- The administrator needs to tell the system "this is the current academic year"
+
+2024/2025 Completes
+2025/2026 current
+2026/2027 Upcoming
+
+8 SEMESTERS :- A session normally contains semesters.
+|___ 2025/2026
+|        |__First Semester
+|        |__Second Semester
+
+9. USERS :- This is one of the biggest pages.
+But first remember user is a central concept. Which means it is neutral from any role. but can be assigned as role after
+required procedure.
+
+it allows the administrators to:
+
+-View users
+-Search users
+-Create users
+-Deactivate users
+-Reset accounts
+-Change roles 
+-View account status
+
+Also remember users are not the same as students. A user can only become a student when the person is enrolled.
+
+10. ROLES & PERMISSIONS :-
+This page controls what people are allowed to do
+e.g
+lecturers
++ Student view
++ Courses view
++ Results view
++ Results Create
+
+- users delete
+- system settings
+- results publish
+
+
+11. STUDENTS :-
+This page manages student records, which includes all student details
+
+12. STAFF :- 
+This page manages all the staffs. Which includes:
+
+Administration staff
+Account Officers
+Registry staff
+ICT staff
+Examination Officers
+
+13. LECTURERS :-
+Lecturers deserve their own management because they interact heavily with __academics
+A lecturer might have:
+
+Staff ID
+Name
+Department
+Courses assigned
+Academic rank
+Status
+
+14. ADMISSION :-
+This page handles students entering the university
+
+Applicant
+    ↓
+Application
+    ↓
+Review
+    ↓
+Decision
+    ↓
+Admission
+    ↓
+Student account
+The admin can see:
+
+Pending applications
+Approved applications
+Rejected applications
+Admission offers
+
+15. COURSE REGISTRATION :- This is where students choose courses.
+Student
+  ↓
+2025/2026
+  ↓
+First Semester
+  ↓
+Available courses
+  ↓
+Select courses
+  ↓
+Submit registration
+
+The system should check things like:
+
+Is registration open?
+Is the student active?
+Does the course belong to the student's program?
+Has the student already registered?
+Are prerequisites satisfied?
+Are credit limits respected?
+
+16. RESULTS
+
+This is another very sensitive area.
+
+Lecturer:
+
+Select course
+     ↓
+Select students
+     ↓
+Enter scores
+     ↓
+Submit
+
+Then perhaps:
+
+Lecturer submits
+       ↓
+Department review
+       ↓
+Approval
+       ↓
+Publication
+       ↓
+Student sees result
+
+17. Result Approval
+
+This can be a separate administrative page.
+
+For example:
+
+Pending Results
+
+CSC301
+Computer Science
+2025/2026
+First Semester
+
+Submitted by:
+Lecturer A
+
+Status:
+Awaiting approval
+
+An authorized administrator can:
+
+Review
+Approve
+Reject
+Return for correction
+
+18. Finance
+
+This manages financial information.
+
+For example:
+
+School fees
+Registration fees
+Acceptance fees
+Other charges
+Payments
+Invoices
+Payment status
+
+A student might see:
+
+2025/2026 School Fees
+
+Amount: ₦XXX,XXX
+
+Paid: ₦XXX,XXX
+
+Balance: ₦XX,XXX
+
+Status: Partially Paid
+
+The finance system should be separate from authentication and academics, even though they communicate with each other.
+
+19. Notifications
+
+This is the university's communication center.
+
+Notifications could be:
+
+Registration is now open.
+
+Your result has been published.
+
+Your payment was successful.
+
+Your admission has been approved.
+
+Your course registration requires attention.
+
+We can eventually support:
+
+In-app notifications
+Email
+Possibly SMS
+
+20. Documents
+
+This handles university documents.
+
+Examples:
+
+Admission letter
+Receipt
+Transcript
+Result statement
+Student ID documents
+Certificates
+
+This area needs careful permission control because documents can contain sensitive information.
+
+21. Reports
+
+This is where administrators ask the system questions like:
+
+How many students are in Computer Science?
+
+or:
+
+How many students registered this semester?
+
+or:
+
+How many students have outstanding fees?
+
+Reports might include:
+
+Student population
+Registration statistics
+Result statistics
+Admission statistics
+Financial statistics
+Department statistics
+Faculty statistics
+
+
+22. Audit Logs
+
+This is extremely important for your Super Admin system.
+
+Imagine someone changes a student's result.
+
+You need to know:
+
+WHO did it?
+WHAT did they change?
+WHEN did they do it?
+WHICH record did they change?
+
+So you record:
+
+Actor:
+Admin 123
+
+Action:
+RESULT_UPDATED
+
+Target:
+Student 456
+
+Time:
+2026-09-02 08:30
+
+Result:
+Success
+
+This gives you accountability.
+
+23. Active Sessions
+
+This belongs under security.
+
+The Super Admin/security administrator can see:
+
+User
+Device
+Last active
+Login time
+Session status
+
+And potentially revoke sessions.
+
+For example:
+
+John Doe
+Chrome / Windows
+
+[ Revoke ]
+
+This becomes very useful if an account is compromised.
+
+24. System Settings
+
+This is where the Super Admin controls global settings.
+
+Examples:
+
+University name
+University logo
+Contact information
+Academic configuration
+Grading configuration
+Registration settings
+Email settings
+Notification settings
+Security settings
+
+But we need to be careful here.
+
+Not every setting should be changeable from one giant page.
+
+We'll divide settings into logical groups.
