@@ -1,6 +1,9 @@
-use mongodb::Database;
+// THIS STATE IS USED AS A CENTER
+use mongodb::Database; //THIS IS SAYING  THIS STATE WILL CONTAIN MONGODB
+use crate::config::Config; //THIS GRABS THE CONFIG FUNCTION
 
-#[derive(Clone)]
-pub struct AppState {
-    pub database: Database,
+#[derive(Clone)]//AXUM CLONES THE STATE HANDLE WHEN NEEDED
+pub struct AppState { //CREATING OUR SHARED BOX
+    pub database: Database, //ADDING THE MONGODB DATABASE INSIDE THE BOX
+    pub config: Config, //ADDING CONFIG TO THE BOX
 }

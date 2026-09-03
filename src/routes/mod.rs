@@ -10,6 +10,6 @@ use crate::{
 
 pub fn create_router(state: AppState) -> Router {
     Router::new()
-    .route("/health", get(health_check))
+    .route("/health", get(health_check)) //creating the health API
     .with_state(state)
 }
