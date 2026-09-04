@@ -16,6 +16,6 @@ pub async fn connect(
 
     database.run_command(mongodb::bson::doc! { "ping": 1 }).await?; //THIS IS USED TO TEST THE MONGODB CONNECTION
 
-    println!("successfully connected to MongoDB"); 
+    tracing::info!("successfully connected to MongoDB"); 
     Ok(database)
 }

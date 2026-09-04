@@ -1,17 +1,33 @@
 // THESE ARE MODUELS OF THE APPLICATION
 mod errors;
+mod logging;
 mod config;
 mod database;
 mod handlers;
 mod routes;
 mod state;
+mod middleware;
 
-use axum::http::HeaderValue;
-use tower_http::cors::CorsLayer;
+use axum::{
+    http::{
+        header::{HeaderName, HeaderValue},
+        Method,
+    },
+    extract::DefaultBodyLimit,
+};
+use tower_http::{
+    cors::CorsLayer,
+    set_header::SetResponseHeaderLayer,
+};
+use tower_governor::{
+    governor::GovernorConfigBuilder,
+    GovernorLayer,
+};
 
 use std::env;
 
 use tokio::net::TcpListener;
+
 
 use crate::{
     config::Config,
@@ -20,6 +36,7 @@ use crate::{
 
 #[tokio::main]
 async fn main() {
+    logging::init();
     dotenvy::dotenv().ok();
 
     let config = Config::from_env(); // CALLING THE CONFIG FUNCTION THAT CONTAINS THE MONGODB URI, DATABASE NAME, SERVERPORT
@@ -35,10 +52,10 @@ async fn main() {
         config: config.clone(),
     };
 
-    let fontend_origin = config.frontend_url.parse::<HeaderValue>().expect("Invalid CORS origin");
+    let frontend_origin = config.frontend_url.parse::<HeaderValue>().expect("Invalid CORS origin");
 
     let cors = CorsLayer::new()
-    .allow_origin(fontend_origin)
+    .allow_origin(frontend_origin)
     .allow_methods([
         axum::http::Method::GET,
         axum::http::Method::POST,
@@ -51,13 +68,50 @@ async fn main() {
         axum::http::header::AUTHORIZATION,
     ]);
 
-    let app = routes::create_router(state).layer(cors);
+    let governor_config = GovernorConfigBuilder::default()
+    .per_second(2)
+    .burst_size(10)
+    .finish()
+    .expect("Failed to create rate limiter");
+
+    let app = routes::create_router(state)
+    .layer(DefaultBodyLimit::max(1 * 1024 * 1024))
+    .layer(GovernorLayer::new(governor_config))
+    .layer(cors)
+    .layer(
+        SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("x-content-type-options"),
+            HeaderValue::from_static("nosniff"),
+        )
+    )
+    .layer(
+        SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("x-frame-options"),
+            HeaderValue::from_static("DENY"),
+        )
+    )
+    .layer(
+        SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("referrer-policy"),
+            HeaderValue::from_static("no-referrer"),
+        )
+    )
+    .layer(
+        SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("permissions-policy"),
+            HeaderValue::from_static("camera=(), microphone=(), geoloction=()"),
+        )
+    );
+    
 
     let address = format!("localhost:{}", config.server_port);
 
     let listener = TcpListener::bind(&address).await.expect("Failed to bind server");
 
-    println!("School Portal API running at http://{}", address);
+    tracing::info!(address = %address, "School Portal API running");
 
-    axum::serve(listener, app).await.expect("Server error");
+    axum::serve(
+        listener, 
+        app.into_make_service_with_connect_info::<std::net::SocketAddr>(), 
+    ).await.expect("Server error");
 }
