@@ -6,6 +6,8 @@ mod database;
 mod handlers;
 mod routes;
 mod state;
+mod models;
+mod services;
 mod middleware;
 
 use axum::{
