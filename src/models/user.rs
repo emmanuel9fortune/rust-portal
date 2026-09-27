@@ -25,7 +25,7 @@ pub struct User {
 pub enum UserRole {
     SuperAdmin,
     Admin,
-    Lecturr,
+    Lecturer,
     Staff,
     Student,
 }

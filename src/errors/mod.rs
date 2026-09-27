@@ -1,6 +1,7 @@
 use axum::{
     http::StatusCode,
-    response::{IntoResponse, Response},Json
+    response::{IntoResponse, Response},
+    Json,
 };
 use serde::Serialize;
 
@@ -8,15 +9,15 @@ use serde::Serialize;
 pub enum AppError {
     Internal,
     BadRequest(String),
-    Unauthorized,
-    Forbidden,
-    NotFound,
+    Unauthorized(String),
+    Forbidden(String),
+    NotFound(String),
 }
 
 #[derive(Serialize)]
 pub struct ErrorResponse {
     pub success: bool,
-    pub message: String
+    pub message: String,
 }
 
 impl IntoResponse for AppError {
@@ -26,21 +27,25 @@ impl IntoResponse for AppError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Internal server error".to_string(),
             ),
+
             AppError::BadRequest(message) => (
                 StatusCode::BAD_REQUEST,
                 message,
             ),
-            AppError::Unauthorized => (
+
+            AppError::Unauthorized(message) => (
                 StatusCode::UNAUTHORIZED,
-                "Unauthorized".to_string(),
+                message,
             ),
-            AppError::Forbidden => (
+
+            AppError::Forbidden(message) => (
                 StatusCode::FORBIDDEN,
-                "Forbidden".to_string(),
+                message,
             ),
-            AppError::NotFound => (
+
+            AppError::NotFound(message) => (
                 StatusCode::NOT_FOUND,
-                "Resource not found".to_string(),
+                message,
             ),
         };
 

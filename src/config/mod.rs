@@ -7,6 +7,7 @@ pub struct Config{
     pub database_name: String,
     pub server_port: u16,
     pub frontend_url: String,
+    pub jwt_secret: String,
 }
 
 impl Config {
@@ -21,11 +22,15 @@ impl Config {
         let frontend_url = env::var("FRONTEND_URL")
         .expect("FRONTEND_URL is not set");
 
+        let jwt_secret = env::var("JWT_SECRET")
+        .expect("JWT_SECRET is not set");
+
         Self {
             mongodb_uri,
             database_name,
             server_port,
             frontend_url,
+            jwt_secret,
         }
     }
 }

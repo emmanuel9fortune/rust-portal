@@ -4,14 +4,16 @@ use axum::{
 };
 
 use crate::{
-    handlers::{
-        health::health_check,
+    handlers::auth::{
+        bootstrap_super_admin,
+        login,
     },
     state::AppState,
 };
 
 pub fn create_router(state: AppState) -> Router {
     Router::new()
-    .route("/health", get(health_check)) //creating the health API
+    .route("/auth/login", post(login))
+    .route("/auth/bootstrap-super-admin", post(bootstrap_super_admin))
     .with_state(state)
 }
