@@ -17,5 +17,5 @@ tower_governor = "0.8.0"
 validator = { version = "0.21.0", features = ["derive"] }
 argon2 = { version = "0.6.0", features = ["password-hash"] }
 rand_core = "0.10.1"
-jsonwebtoken = "11.1.0"
+jsonwebtoken = { version = "11.1.0", features = ["rust_crypto"] }
 chrono = "0.4.45"

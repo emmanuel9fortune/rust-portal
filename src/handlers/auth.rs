@@ -11,6 +11,7 @@ use crate::{
     models::user::{UserRole, UserStatus},
     services::{
         password_service::verify_password,
+        token_service::create_access_token,
         user_service::find_user_by_email,
     },
     state::AppState,
@@ -101,10 +102,18 @@ pub async fn login(
         );
     }
 
+    let access_token = create_access_token(
+        user.id.to_hex(),
+        user.role.clone(),
+        &state.config.jwt_secret,
+    )
+    .map_err(|_| AppError::Internal)?;
+
     // 8. Login successful
     let response = LoginResponse {
         success: true,
         message: "Login successful".to_string(),
+        access_token,
         user: LoginUser {
             id: user.id.to_hex(),
             email: user.email,
@@ -115,7 +124,6 @@ pub async fn login(
 
     Ok(Json(response))
 }
-
 
 pub async fn bootstrap_super_admin(
     State(state): State<AppState>,
@@ -169,9 +177,17 @@ pub async fn bootstrap_super_admin(
         }
     })?;
 
+    let access_token = create_access_token(
+        user.id.to_hex(),
+        user.role.clone(),
+        &state.config.jwt_secret,
+    )
+    .map_err(|_| AppError::Internal)?;
+
     Ok(Json(LoginResponse {
         success: true,
         message: "Super Admin created successfully".to_string(),
+        access_token,
         user: LoginUser {
             id: user.id.to_hex(),
             email: user.email,
