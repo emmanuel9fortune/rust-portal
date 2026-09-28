@@ -13,7 +13,6 @@ mod middleware;
 use axum::{
     http::{
         header::{HeaderName, HeaderValue},
-        Method,
     },
     extract::DefaultBodyLimit,
 };
@@ -26,7 +25,7 @@ use tower_governor::{
     GovernorLayer,
 };
 
-use std::env;
+// use std::env;
 
 use tokio::net::TcpListener;
 

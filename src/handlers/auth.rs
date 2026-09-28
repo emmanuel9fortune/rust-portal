@@ -1,5 +1,5 @@
 use axum::{
-    extract::State,
+    extract::{Extension, State},
     Json,
 };
 
@@ -194,5 +194,31 @@ pub async fn bootstrap_super_admin(
             role: user.role,
             status: user.status,
         },
+    }))
+}
+
+pub async fn me(
+    State(state): State<AppState>,
+    Extension(user): Extension<crate::middleware::auth::AuthenticatedUser>,
+) -> Result<Json<LoginUser>, AppError> {
+    let user_id = mongodb::bson::oid::ObjectId::parse_str(&user.user_id)
+        .map_err(|_| AppError::Internal)?;
+
+    let current_user = crate::services::user_service::find_user_by_id(
+        &state.database,
+        &user_id,
+    )
+    .await
+    .map_err(|_| AppError::Internal)?;
+
+    let current_user = current_user.ok_or(
+        AppError::NotFound("User not found".to_string())
+    )?;
+
+    Ok(Json(LoginUser {
+        id: current_user.id.to_hex(),
+        email: current_user.email,
+        role: current_user.role,
+        status: current_user.status,
     }))
 }

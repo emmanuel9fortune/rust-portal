@@ -21,7 +21,7 @@ pub struct User {
     pub updated_at: mongodb::bson::DateTime,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub enum UserRole {
     SuperAdmin,
     Admin,
